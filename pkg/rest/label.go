@@ -17,3 +17,7 @@ type Label struct {
 	// Favorite indicates whether the label is a favorite.
 	Favorite bool `json:"favorite"`
 }
+
+const (
+	LabelsUrl = APIUrl + "/labels"
+)
