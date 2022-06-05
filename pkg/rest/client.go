@@ -14,36 +14,46 @@ const (
 )
 
 type Client struct {
-	Projects ResourceClient[Project]
-	Labels   ResourceClient[Label]
+	Projects ProjectsClient
+	Sections SectionsClient
+	Tasks    TasksClient
+	Comments CommentsClient
+	Labels   LabelsClient
 }
 
-type resource interface {
-	Comment | Label | Project | Section | Task
-}
-
-func NewClient(httpClient *http.Client) (*Client, error) {
-	projectsClientConfig := resourceClientConfig{
-		httpClient: httpClient,
-		baseUrl:    ProjectsUrl,
-	}
-	projectsClient, err := newResourceClient[Project](projectsClientConfig)
+func NewClient(httpClient *http.Client) (Client, error) {
+	projectsClient, err := NewProjectsClient(httpClient)
 	if err != nil {
-		return nil, errors.WithMessage(err, "failed to create Projects client")
+		return Client{}, errors.WithMessage(err, "failed to create Projects client")
 	}
 
-	labelsClientConfig := resourceClientConfig{
-		httpClient: httpClient,
-		baseUrl:    LabelsUrl,
-	}
-	labelsClient, err := newResourceClient[Label](labelsClientConfig)
+	sectionsClient, err := NewSectionsClient(httpClient)
 	if err != nil {
-		return nil, errors.WithMessage(err, "failed to create Labels client")
+		return Client{}, errors.WithMessage(err, "failed to create Sections client")
+	}
+
+	tasksClient, err := NewTasksClient(httpClient)
+	if err != nil {
+		return Client{}, errors.WithMessage(err, "failed to create Tasks client")
+	}
+
+	commentsClient, err := NewCommentsClient(httpClient)
+	if err != nil {
+		return Client{}, errors.WithMessage(err, "failed to create Comments client")
+	}
+
+	labelsClient, err := NewLabelsClient(httpClient)
+	if err != nil {
+		return Client{}, errors.WithMessage(err, "failed to create Labels client")
 	}
 
 	client := Client{
 		Projects: projectsClient,
+		Sections: sectionsClient,
+		Tasks:    tasksClient,
+		Comments: commentsClient,
 		Labels:   labelsClient,
 	}
-	return &client, nil
+
+	return client, nil
 }

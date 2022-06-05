@@ -48,7 +48,3 @@ type Project struct {
 	// For non-shared projects the attribute is set to 0.
 	SyncId *int `json:"sync_id,omitempty"`
 }
-
-const (
-	ProjectsUrl = APIUrl + "/projects"
-)
